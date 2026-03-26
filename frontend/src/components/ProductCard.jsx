@@ -1,4 +1,5 @@
 // components/ProductCard.jsx
+import { formatCurrency } from "../utils/formatCurrency";
 import { StarIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/24/solid";
 import { StarIcon as StarOutline } from "@heroicons/react/24/outline";
 
@@ -85,7 +86,7 @@ export default function ProductCard({ product, isCheapest: isCheapestProp }) {
         <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
           <div>
             <span className="text-2xl font-bold text-gray-900">
-              ${Number(product.price).toFixed(2)}
+              {formatCurrency(product.price)}
             </span>
             {isCheapest && (
               <p className="text-xs text-green-600 font-medium mt-0.5">Lowest price!</p>

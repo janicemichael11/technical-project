@@ -1,4 +1,5 @@
 // components/PriceSummaryBar.jsx
+import { formatCurrency } from "../utils/formatCurrency";
 // Shows a quick stats strip: cheapest, most expensive, average price.
 // Prefers backend-calculated meta values when available (more accurate
 // since they're computed before pagination/filtering).
@@ -25,10 +26,10 @@ export default function PriceSummaryBar({ products, query, meta = {} }) {
         across {meta.total ?? products.length} listings
       </p>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <Stat label="Lowest Price"  value={`$${Number(min).toFixed(2)}`}     sub={cheapestPlatform} highlight />
-        <Stat label="Highest Price" value={`$${Number(max).toFixed(2)}`} />
-        <Stat label="Average Price" value={`$${Number(avg).toFixed(2)}`} />
-        <Stat label="Max Savings"   value={`$${Number(saving).toFixed(2)}`}  sub="vs most expensive" />
+        <Stat label="Lowest Price"  value={formatCurrency(min)}    sub={cheapestPlatform} highlight />
+        <Stat label="Highest Price" value={formatCurrency(max)} />
+        <Stat label="Average Price" value={formatCurrency(avg)} />
+        <Stat label="Max Savings"   value={formatCurrency(saving)}  sub="vs most expensive" />
       </div>
     </div>
   );

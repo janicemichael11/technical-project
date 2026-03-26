@@ -2,6 +2,7 @@
 // Fetches a single product by its MongoDB _id from GET /api/products/:id
 // Accessible via /product/:id
 
+import { formatCurrency } from "../utils/formatCurrency";
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { productService } from "../services/api";
@@ -123,7 +124,7 @@ export default function ProductDetail() {
               {/* Price */}
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-extrabold text-gray-900">
-                  ${Number(product.price).toFixed(2)}
+                  {formatCurrency(product.price)}
                 </span>
                 {product.isCheapest && (
                   <span className="flex items-center gap-1 text-sm font-semibold text-green-600">
