@@ -1,23 +1,26 @@
 // Mock product database — simulates results from multiple platforms.
-// Each product has a `keywords` array used to match search queries.
+// All prices are in INR (₹). Each product has a `keywords` array used
+// to match search queries.
 
 export const mockProducts = [
   // ── iPhone 13 ──────────────────────────────────────────────────────────────
   {
     id: 1,
     title: "Apple iPhone 13 (128GB) - Midnight",
-    price: 699.99,
+    price: 58999,
+    currency: "INR",
     platform: "Amazon",
     rating: 4.7,
     reviews: 18420,
     image: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?w=400&q=80",
-    url: "https://www.amazon.com",
+    url: "https://www.amazon.in",
     keywords: ["iphone", "iphone 13", "apple", "smartphone", "phone"],
   },
   {
     id: 2,
     title: "Apple iPhone 13 128GB Midnight (Refurbished)",
-    price: 589.00,
+    price: 48999,
+    currency: "INR",
     platform: "eBay",
     rating: 4.4,
     reviews: 3210,
@@ -28,7 +31,8 @@ export const mockProducts = [
   {
     id: 3,
     title: "iPhone 13 128GB - All Colors Available",
-    price: 649.00,
+    price: 53999,
+    currency: "INR",
     platform: "Flipkart",
     rating: 4.5,
     reviews: 9870,
@@ -39,7 +43,8 @@ export const mockProducts = [
   {
     id: 4,
     title: "Handmade iPhone 13 Leather Case + Phone Bundle",
-    price: 729.00,
+    price: 60499,
+    currency: "INR",
     platform: "Etsy",
     rating: 4.8,
     reviews: 542,
@@ -52,18 +57,20 @@ export const mockProducts = [
   {
     id: 5,
     title: "Samsung Galaxy S23 5G (256GB) - Phantom Black",
-    price: 799.99,
+    price: 66399,
+    currency: "INR",
     platform: "Amazon",
     rating: 4.6,
     reviews: 12300,
     image: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400&q=80",
-    url: "https://www.amazon.com",
+    url: "https://www.amazon.in",
     keywords: ["samsung", "galaxy s23", "samsung s23", "android", "smartphone", "phone"],
   },
   {
     id: 6,
     title: "Samsung Galaxy S23 256GB - Best Price",
-    price: 749.00,
+    price: 62249,
+    currency: "INR",
     platform: "Flipkart",
     rating: 4.5,
     reviews: 8900,
@@ -74,7 +81,8 @@ export const mockProducts = [
   {
     id: 7,
     title: "Samsung Galaxy S23 5G Unlocked (Used - Good)",
-    price: 620.00,
+    price: 51499,
+    currency: "INR",
     platform: "eBay",
     rating: 4.2,
     reviews: 2100,
@@ -87,18 +95,20 @@ export const mockProducts = [
   {
     id: 8,
     title: "Sony WH-1000XM5 Wireless Noise Cancelling Headphones",
-    price: 349.99,
+    price: 29049,
+    currency: "INR",
     platform: "Amazon",
     rating: 4.8,
     reviews: 22100,
     image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80",
-    url: "https://www.amazon.com",
+    url: "https://www.amazon.in",
     keywords: ["sony", "headphones", "wh-1000xm5", "noise cancelling", "wireless", "audio"],
   },
   {
     id: 9,
     title: "Sony WH-1000XM5 Headphones - Black",
-    price: 329.00,
+    price: 27307,
+    currency: "INR",
     platform: "Flipkart",
     rating: 4.7,
     reviews: 7650,
@@ -109,7 +119,8 @@ export const mockProducts = [
   {
     id: 10,
     title: "Sony WH-1000XM5 (Open Box, Like New)",
-    price: 279.00,
+    price: 23157,
+    currency: "INR",
     platform: "eBay",
     rating: 4.5,
     reviews: 1890,
@@ -120,7 +131,8 @@ export const mockProducts = [
   {
     id: 11,
     title: "Custom Engraved Sony XM5 Headphone Stand",
-    price: 45.00,
+    price: 3735,
+    currency: "INR",
     platform: "Etsy",
     rating: 4.9,
     reviews: 320,
@@ -133,18 +145,20 @@ export const mockProducts = [
   {
     id: 12,
     title: 'Apple MacBook Pro 14" M3 Pro (512GB SSD)',
-    price: 1999.00,
+    price: 165917,
+    currency: "INR",
     platform: "Amazon",
     rating: 4.9,
     reviews: 5430,
     image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&q=80",
-    url: "https://www.amazon.com",
+    url: "https://www.amazon.in",
     keywords: ["macbook", "macbook pro", "apple", "laptop", "mac", "m3"],
   },
   {
     id: 13,
     title: 'MacBook Pro 14" M3 Pro Chip - Space Black',
-    price: 1949.00,
+    price: 161767,
+    currency: "INR",
     platform: "Flipkart",
     rating: 4.8,
     reviews: 2100,
@@ -155,7 +169,8 @@ export const mockProducts = [
   {
     id: 14,
     title: 'Apple MacBook Pro 14" M3 (Refurbished - Excellent)',
-    price: 1699.00,
+    price: 141017,
+    currency: "INR",
     platform: "eBay",
     rating: 4.6,
     reviews: 870,
@@ -166,7 +181,8 @@ export const mockProducts = [
   {
     id: 15,
     title: "Handcrafted MacBook Pro Leather Sleeve 14 inch",
-    price: 68.00,
+    price: 5644,
+    currency: "INR",
     platform: "Etsy",
     rating: 4.9,
     reviews: 1240,
@@ -179,18 +195,20 @@ export const mockProducts = [
   {
     id: 16,
     title: "Nike Air Max 270 Men's Shoes - Black/White",
-    price: 150.00,
+    price: 12450,
+    currency: "INR",
     platform: "Amazon",
     rating: 4.5,
     reviews: 9800,
     image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80",
-    url: "https://www.amazon.com",
+    url: "https://www.amazon.in",
     keywords: ["nike", "air max", "nike air max", "shoes", "sneakers", "running"],
   },
   {
     id: 17,
     title: "Nike Air Max 270 - Latest Collection",
-    price: 139.99,
+    price: 11619,
+    currency: "INR",
     platform: "Flipkart",
     rating: 4.4,
     reviews: 5600,
@@ -201,7 +219,8 @@ export const mockProducts = [
   {
     id: 18,
     title: "Nike Air Max 270 Size 10 (Worn Once)",
-    price: 89.00,
+    price: 7387,
+    currency: "INR",
     platform: "eBay",
     rating: 4.2,
     reviews: 430,
@@ -212,7 +231,8 @@ export const mockProducts = [
   {
     id: 19,
     title: "Custom Hand-Painted Nike Air Max 270",
-    price: 220.00,
+    price: 18260,
+    currency: "INR",
     platform: "Etsy",
     rating: 4.8,
     reviews: 215,
@@ -225,18 +245,20 @@ export const mockProducts = [
   {
     id: 20,
     title: "Apple iPad (10th Gen) 64GB Wi-Fi - Blue",
-    price: 449.00,
+    price: 37267,
+    currency: "INR",
     platform: "Amazon",
     rating: 4.7,
     reviews: 14200,
     image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&q=80",
-    url: "https://www.amazon.com",
+    url: "https://www.amazon.in",
     keywords: ["ipad", "apple ipad", "tablet", "apple", "ipad 10th"],
   },
   {
     id: 21,
     title: "Apple iPad 10th Generation 64GB - All Colors",
-    price: 429.00,
+    price: 35607,
+    currency: "INR",
     platform: "Flipkart",
     rating: 4.6,
     reviews: 6700,
@@ -247,7 +269,8 @@ export const mockProducts = [
   {
     id: 22,
     title: "Apple iPad 10th Gen 64GB (Refurbished - Very Good)",
-    price: 369.00,
+    price: 30627,
+    currency: "INR",
     platform: "eBay",
     rating: 4.4,
     reviews: 3100,
@@ -258,7 +281,8 @@ export const mockProducts = [
   {
     id: 23,
     title: "Handmade iPad 10th Gen Folio Case - Genuine Leather",
-    price: 55.00,
+    price: 4565,
+    currency: "INR",
     platform: "Etsy",
     rating: 4.9,
     reviews: 780,
@@ -271,18 +295,20 @@ export const mockProducts = [
   {
     id: 24,
     title: "Secretlab TITAN Evo Gaming Chair - Black",
-    price: 519.00,
+    price: 43077,
+    currency: "INR",
     platform: "Amazon",
     rating: 4.7,
     reviews: 8900,
     image: "https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=400&q=80",
-    url: "https://www.amazon.com",
+    url: "https://www.amazon.in",
     keywords: ["gaming chair", "chair", "secretlab", "gaming", "desk chair"],
   },
   {
     id: 25,
     title: "Secretlab TITAN Evo 2024 Gaming Chair",
-    price: 499.00,
+    price: 41417,
+    currency: "INR",
     platform: "Flipkart",
     rating: 4.6,
     reviews: 3400,
@@ -293,7 +319,8 @@ export const mockProducts = [
   {
     id: 26,
     title: "Secretlab TITAN Evo Gaming Chair (Used - Good)",
-    price: 380.00,
+    price: 31540,
+    currency: "INR",
     platform: "eBay",
     rating: 4.3,
     reviews: 560,
@@ -305,18 +332,15 @@ export const mockProducts = [
 
 // Simulates an async API call with a realistic delay
 export const searchProducts = (query) => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     setTimeout(() => {
-      if (!query || query.trim().length === 0) {
-        resolve([]);
-        return;
-      }
+      if (!query || query.trim().length === 0) { resolve([]); return; }
       const q = query.toLowerCase().trim();
       const results = mockProducts.filter((p) =>
         p.keywords.some((kw) => kw.includes(q) || q.includes(kw)) ||
         p.title.toLowerCase().includes(q)
       );
       resolve(results);
-    }, 800); // 800ms fake network delay
+    }, 800);
   });
 };
