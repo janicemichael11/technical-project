@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { formatCurrency } from '../utils/formatCurrency';
 
 interface PriceEntry {
   price: number;
@@ -40,7 +41,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ history }) => {
       <h3 className="text-lg font-semibold mb-2">{history.title}</h3>
       <div className="mb-4">
         <span className="text-sm text-gray-600">
-          Lowest: ${minPrice.toFixed(2)} | Highest: ${maxPrice.toFixed(2)}
+          Lowest: {formatCurrency(minPrice)} | Highest: {formatCurrency(maxPrice)}
         </span>
       </div>
       <ResponsiveContainer width="100%" height={200}>
@@ -55,7 +56,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ history }) => {
               }
               return label;
             }}
-            formatter={(value: number) => [`$${value.toFixed(2)}`, 'Price']}
+            formatter={(value: number) => [formatCurrency(value), 'Price']}
           />
           <Line
             type="monotone"
