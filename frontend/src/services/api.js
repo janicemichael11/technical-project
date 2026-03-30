@@ -13,8 +13,8 @@ import axios from 'axios';
 
 // Create a reusable Axios instance with shared configuration
 const api = axios.create({
-  baseURL: '/api',    // all requests are relative to /api
-  timeout: 15000,     // 15 seconds — scraping can be slow
+  baseURL: import.meta.env.VITE_API_URL || '/api',
+  timeout: 15000,
   headers: { 'Content-Type': 'application/json' },
 });
 
