@@ -1,33 +1,41 @@
-// src/services/searchService.js
-// Thin wrapper around productService.search that normalises the response
-// into the shape the rest of the frontend expects.
-// Keeping this file means Home.jsx doesn't need to change its import.
+// ============================================================
+// services/searchService.js — Search API wrapper for Home.jsx
+// ============================================================
+// This thin wrapper calls productService.search and normalises
+// the Axios response into a simple { data, meta, error } shape
+// that Home.jsx can use directly without knowing about Axios.
+//
+// Backend response envelope shape:
+//   { success, message, data: Product[], meta: { total, cheapestPrice, ... } }
+//
+// Product shape returned by the backend:
+//   { _id, name, price, currency, platform, rating, reviews, image, url, isCheapest }
 
 import { productService } from './api';
 
 /**
- * Fetch products from the backend comparison API.
+ * fetchProducts(query, options)
+ * Fetches and compares product prices from the backend.
  *
- * @param {string} query   - Search term
- * @param {object} options - { sort, platform }
+ * @param {string} query   — product name to search for
+ * @param {object} options — optional { sort, platform } filters
  * @returns {{ data: Product[], meta: object, error: string|null }}
  *
- * Backend response envelope:
- *   { success, message, data: Product[], meta: { total, cheapestPrice, ... } }
- *
- * Backend product shape:
- *   { _id, name, price, platform, rating, reviews, image, productUrl, isCheapest, rank }
+ * Always returns an object (never throws) so the caller doesn't
+ * need a try/catch — errors are returned in the `error` field.
  */
 export const fetchProducts = async (query, options = {}) => {
   try {
     const res = await productService.search(query, options);
 
-    // res.data is the full Axios response; res.data.data is the products array
-    const products = res.data?.data  ?? [];
-    const meta     = res.data?.meta  ?? {};
+    // res.data is the full Axios response body
+    // res.data.data is the products array inside the backend envelope
+    const products = res.data?.data ?? [];
+    const meta     = res.data?.meta ?? {};
 
     return { data: products, meta, error: null };
   } catch (err) {
+    // Return the error message instead of throwing so the UI can display it
     return {
       data:  [],
       meta:  {},

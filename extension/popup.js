@@ -1,50 +1,39 @@
-// popup.js
-
-import { trackProductPrice, generateProductId } from './services/priceTracker.js';
-import priceHistoryStorage from './services/priceHistoryStorage.js';
+// extension/popup.js
+// Loaded as a plain <script> tag after:
+//   chart.js, priceHistoryStorage.js, priceTracker.js
+// All three expose globals: Chart, window.priceHistoryStorage,
+// window.trackProductPrice, window.generateProductId
 
 const $ = (id) => document.getElementById(id);
 
 const ui = {
-  productBar:  $('product-bar'),
-  productName: $('product-name'),
-  btnRefresh:  $('btn-refresh'),
-  searchInput: $('search-input'),
-  btnSearch:   $('btn-search'),
-  spinner:     $('state-spinner'),
-  error:       $('state-error'),
-  errorMsg:    $('error-msg'),
-  empty:       $('state-empty'),
-  results:     $('results'),
+  productBar:   $('product-bar'),
+  productName:  $('product-name'),
+  btnRefresh:   $('btn-refresh'),
+  searchInput:  $('search-input'),
+  btnSearch:    $('btn-search'),
+  spinner:      $('state-spinner'),
+  error:        $('state-error'),
+  errorMsg:     $('error-msg'),
+  empty:        $('state-empty'),
+  results:      $('results'),
   priceHistory: $('price-history'),
-  priceChart: $('price-chart'),
-  priceStats: $('price-stats'),
+  priceChart:   $('price-chart'),
+  priceStats:   $('price-stats'),
 };
 
-let currentQuery = '';
+let currentQuery     = '';
 let currentProductId = null;
-let chart = null;
+let chart            = null;
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 (async () => {
   const { title, url } = await getPageInfo();
   if (title) {
-    currentQuery = title;
-    currentProductId = generateProductId(url, title);
+    currentQuery     = title;
+    currentProductId = window.generateProductId(url, title);
     ui.productName.textContent = title;
-    ui.searchInput.value = title;
-    show(ui.productBar);
-    await search(title);
-  }
-})();
-
-// ── Boot ──────────────────────────────────────────────────────────────────────
-(async () => {
-  const title = await getPageTitle();
-  if (title) {
-    currentQuery = title;
-    ui.productName.textContent = title;
-    ui.searchInput.value = title;
+    ui.searchInput.value       = title;
     show(ui.productBar);
     await search(title);
   }
@@ -53,24 +42,30 @@ let chart = null;
 // ── Events ────────────────────────────────────────────────────────────────────
 ui.btnSearch.addEventListener('click', () => {
   const q = ui.searchInput.value.trim();
-  if (q) { currentQuery = q; search(q); }
+  if (!q) return;
+  currentQuery     = q;
+  // For manual searches there is no product URL, so generate ID from the query text
+  currentProductId = window.generateProductId(null, q);
+  search(q);
 });
+
 ui.searchInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') ui.btnSearch.click();
 });
+
 ui.btnRefresh.addEventListener('click', () => {
   if (currentQuery) {
-    // Clear extension cache for this query so we get fresh data
     chrome.runtime.sendMessage({ type: 'CLEAR_CACHE', query: currentQuery });
     search(currentQuery);
   }
 });
 
-// ── Core ──────────────────────────────────────────────────────────────────────
+// ── getPageInfo ───────────────────────────────────────────────────────────────
 async function getPageInfo() {
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab?.id) return { title: null, url: null };
+
     const [{ result }] = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       func: () => {
@@ -79,7 +74,8 @@ async function getPageInfo() {
           'span.B_NuCI', 'h1.yhB1nd span',
           'h1.x-item-title__mainTitle span', '#itemTitle',
           'h1[data-buy-box-listing-title]', 'h1.wt-text-body-03',
-          'h1.pdp-title', 'h1.pdp-e-i-head', 'h1',
+          'h1.pdp-title', 'h1.pdp-e-i-head',
+          'h1',
         ];
         for (const sel of SELECTORS) {
           const t = document.querySelector(sel)?.innerText?.trim();
@@ -94,6 +90,7 @@ async function getPageInfo() {
   }
 }
 
+// ── search ────────────────────────────────────────────────────────────────────
 async function search(query) {
   setState('loading');
   try {
@@ -105,15 +102,15 @@ async function search(query) {
   }
 }
 
-// ── Render ────────────────────────────────────────────────────────────────────
+// ── render ────────────────────────────────────────────────────────────────────
 function render({ products, meta, fromCache }) {
   if (!products?.length) { setState('empty'); return; }
 
   setState('results');
 
-  const minPrice   = Math.min(...products.map((p) => p.price));
-  const fetchedAt  = meta?.fetchedAt ? new Date(meta.fetchedAt) : new Date();
-  const timeStr    = fetchedAt.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+  const minPrice  = Math.min(...products.map((p) => p.price));
+  const fetchedAt = meta?.fetchedAt ? new Date(meta.fetchedAt) : new Date();
+  const timeStr   = fetchedAt.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
   const partialMsg = meta?.partialErrors?.length
     ? `<p class="partial-warn">⚠ Partial results — ${meta.partialErrors.join('; ')}</p>`
     : '';
@@ -143,31 +140,114 @@ function render({ products, meta, fromCache }) {
           </div>
           <div class="card-right">
             <div class="card-price">${formatInr(p.price)}</div>
-            ${p.url
-              ? `<a class="card-link" href="${esc(p.url)}" target="_blank">View →</a>`
-              : ''}
+            ${p.url ? `<a class="card-link" href="${esc(p.url)}" target="_blank">View →</a>` : ''}
           </div>
         </div>`;
     }).join('');
 
-  // Track price and show history
+  // Track the cheapest price seen and attempt to show history chart
   if (currentProductId && currentQuery) {
-    trackProductPrice({ productId: currentProductId, title: currentQuery, currentPrice: minPrice });
-    showPriceHistory(currentProductId, currentQuery);
+    window.trackProductPrice({
+      productId:    currentProductId,
+      title:        currentQuery,
+      currentPrice: minPrice,
+    });
+    showPriceHistory(currentProductId);
   }
 }
 
-// ── State helpers ─────────────────────────────────────────────────────────────
+// ── showPriceHistory ──────────────────────────────────────────────────────────
+async function showPriceHistory(productId) {
+  try {
+    const history = await window.priceHistoryStorage.getProductHistory(productId);
+
+    // Need at least 2 data points to draw a meaningful chart
+    if (!history || history.prices.length < 2) {
+      hide(ui.priceHistory);
+      return;
+    }
+
+    show(ui.priceHistory);
+
+    // Destroy the previous Chart instance before creating a new one,
+    // otherwise Chart.js throws "Canvas is already in use"
+    if (chart) {
+      chart.destroy();
+      chart = null;
+    }
+
+    const labels = history.prices.map((p) =>
+      new Date(p.timestamp).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
+    );
+    const data = history.prices.map((p) => p.price);
+
+    chart = new Chart(ui.priceChart.getContext('2d'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label:           'Price (₹)',
+          data,
+          borderColor:     '#6366f1',
+          backgroundColor: 'rgba(99,102,241,0.08)',
+          tension:         0.3,
+          pointRadius:     4,
+          pointBackgroundColor: '#6366f1',
+        }],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              // Show ₹ formatted price in the tooltip
+              label: (ctx) => ` ${formatInr(ctx.parsed.y)}`,
+            },
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            ticks: {
+              // Show ₹ symbol on Y-axis tick labels
+              callback: (val) => formatInr(val),
+              font: { size: 10 },
+            },
+          },
+          x: { ticks: { font: { size: 10 } } },
+        },
+      },
+    });
+
+    // Show lowest / highest stats below the chart
+    const prices   = history.prices.map((p) => p.price);
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+    ui.priceStats.innerHTML = `
+      <p><strong>Lowest:</strong> ${formatInr(minPrice)}</p>
+      <p><strong>Highest:</strong> ${formatInr(maxPrice)}</p>
+    `;
+  } catch (err) {
+    console.error('Failed to show price history:', err);
+    hide(ui.priceHistory);
+  }
+}
+
+// ── setState ──────────────────────────────────────────────────────────────────
 function setState(state, msg = '') {
-  hide(ui.spinner); hide(ui.error); hide(ui.empty); hide(ui.priceHistory);
+  hide(ui.spinner);
+  hide(ui.error);
+  hide(ui.empty);
+  hide(ui.priceHistory);
   if (state !== 'results') ui.results.innerHTML = '';
-  if (state === 'loading')       show(ui.spinner);
+  if      (state === 'loading') show(ui.spinner);
   else if (state === 'error')  { ui.errorMsg.textContent = msg; show(ui.error); }
   else if (state === 'empty')    show(ui.empty);
 }
 
-function show(el) { el.classList.remove('hidden'); }
-function hide(el) { el.classList.add('hidden'); }
+function show(el) { if (el) el.classList.remove('hidden'); }
+function hide(el) { if (el) el.classList.add('hidden'); }
 
 // ── Utils ─────────────────────────────────────────────────────────────────────
 function esc(str = '') {
@@ -176,61 +256,9 @@ function esc(str = '') {
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-/** Format a number as ₹1,23,456 (Indian locale) */
 function formatInr(price) {
   if (price == null || isNaN(price)) return 'N/A';
   return new Intl.NumberFormat('en-IN', {
-    style:    'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0,
+    style: 'currency', currency: 'INR', maximumFractionDigits: 0,
   }).format(price);
-}
-
-async function showPriceHistory(productId, title) {
-  try {
-    const history = await priceHistoryStorage.getProductHistory(productId);
-    if (!history || history.prices.length < 2) return; // Need at least 2 points for chart
-
-    show(ui.priceHistory);
-
-    // Destroy previous chart
-    if (chart) chart.destroy();
-
-    const ctx = ui.priceChart.getContext('2d');
-    const labels = history.prices.map(p => new Date(p.timestamp).toLocaleDateString());
-    const data = history.prices.map(p => p.price);
-
-    chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Price (INR)',
-          data,
-          borderColor: '#6366f1',
-          backgroundColor: 'rgba(99, 102, 241, 0.1)',
-          tension: 0.1
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: false
-          }
-        }
-      }
-    });
-
-    // Show stats
-    const prices = history.prices.map(p => p.price);
-    const minPrice = Math.min(...prices);
-    const maxPrice = Math.max(...prices);
-    ui.priceStats.innerHTML = `
-      <p><strong>Lowest:</strong> ${formatInr(minPrice)}</p>
-      <p><strong>Highest:</strong> ${formatInr(maxPrice)}</p>
-    `;
-  } catch (error) {
-    console.error('Failed to show price history:', error);
-  }
 }
