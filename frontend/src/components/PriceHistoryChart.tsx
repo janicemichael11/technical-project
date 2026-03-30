@@ -56,16 +56,7 @@ const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({ history }) => {
               }
               return label;
             }}
-<<<<<<< HEAD
-            formatter={(value) => {
-              if (typeof value === 'number') {
-                return [`$${value.toFixed(2)}`, 'Price'];
-              }
-              return ['', 'Price'];
-            }}
-=======
             formatter={(value: number) => [formatCurrency(value), 'Price']}
->>>>>>> 4f034b8eb2ba024d741ca75bae8b51e0c200cf43
           />
           <Line
             type="monotone"
