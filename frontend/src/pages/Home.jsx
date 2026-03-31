@@ -8,6 +8,7 @@ import PriceSummaryBar from "../components/PriceSummaryBar";
 import ParsedProductCard from "../components/ParsedProductCard";
 import Loader from "../components/Loader";
 import BackendStatus from "../components/BackendStatus";
+import DownloadSection from "../components/DownloadSection";
 import { fetchProducts } from "../services/searchService";
 import { productService, historyService } from "../services/api";
 import { useAuth } from "../context/AuthContext";
@@ -273,6 +274,7 @@ export default function Home() {
 
       {/* ── How It Works ──────────────────────────────────────────────────── */}
       {!hasSearched && <HowItWorks />}
+      {!hasSearched && <DownloadSection />}
     </div>
   );
 }

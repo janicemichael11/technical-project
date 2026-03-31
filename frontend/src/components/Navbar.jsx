@@ -1,15 +1,43 @@
 // components/Navbar.jsx
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCartIcon, UserCircleIcon } from '@heroicons/react/24/outline';
+import { UserCircleIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [downloading, setDownloading] = useState(false);
 
   const handleLogoClick = (event) => {
     event.preventDefault();
     window.location.href = '/';
+  };
+
+  const handleDownloadClick = (e) => {
+    e.preventDefault();
+    setDownloading(true);
+
+    // If not on homepage, navigate there first then scroll
+    if (window.location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => scrollToDownload(), 400);
+    } else {
+      scrollToDownload();
+    }
+
+    setTimeout(() => setDownloading(false), 1500);
+  };
+
+  const scrollToDownload = () => {
+    const el = document.getElementById('download-extension');
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Pulse highlight on the section after scroll lands
+    setTimeout(() => {
+      el.classList.add('section-highlight');
+      setTimeout(() => el.classList.remove('section-highlight'), 1200);
+    }, 700);
   };
 
   return (
@@ -30,11 +58,25 @@ export default function Navbar() {
           {/* Nav links */}
           <div className="hidden sm:flex items-center gap-6 text-sm font-medium">
             <Link to="/" className="silver-link">Home</Link>
-            <a href="#how-it-works" className="silver-link">How It Works</a>
-            <span className="text-xs font-semibold px-3 py-1 rounded-full
-                             bg-white/20 border border-white/30 text-slate-300 tracking-wide">
-              Free to Use
-            </span>
+            <a href="/#download-extension" className="silver-link">How It Works</a>
+            <a
+              href="/#download-extension"
+              onClick={handleDownloadClick}
+              className={`btn-gradient flex items-center gap-1.5 text-white text-xs
+                         font-semibold px-4 py-1.5 rounded-xl tracking-wide
+                         transition-all duration-200
+                         ${downloading ? 'scale-95 opacity-80' : 'hover:scale-105'}`}
+            >
+              {downloading ? (
+                <>
+                  <span className="w-3 h-3 border-2 border-white border-t-transparent
+                                   rounded-full animate-spin" />
+                  Scrolling...
+                </>
+              ) : (
+                <>⬇ Download Extension</>
+              )}
+            </a>
 
             {user ? (
               <>
