@@ -19,9 +19,8 @@ export default function Navbar() {
 
           {/* Logo */}
           <a href="/" onClick={handleLogoClick} className="flex items-center gap-2 group">
-            <div className="bg-gradient-to-br from-violet-500 to-blue-600 p-2 rounded-xl shadow-md
-                            group-hover:shadow-violet-400/40 group-hover:scale-105 transition-all duration-200">
-              <ShoppingCartIcon className="h-5 w-5 text-white" />
+            <div className="p-1 rounded-xl group-hover:scale-105 transition-all duration-200">
+              <img src="/logo.png" alt="PricePulse" className="h-8 w-8 rounded-xl object-contain" />
             </div>
             <span className="text-xl font-black tracking-tight silver-text">
               Price<span className="bg-gradient-to-r from-violet-500 to-blue-500 bg-clip-text text-transparent">Pulse</span>

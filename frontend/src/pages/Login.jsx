@@ -73,9 +73,10 @@ export default function Login() {
 
           {/* Logo / brand mark */}
           <div className="fade-in-up-1 flex justify-center mb-6">
-            <span className="text-2xl font-black tracking-tight">
+            <span className="flex items-center gap-2 text-2xl font-black tracking-tight">
+              <img src="/logo.png" alt="PricePulse" className="h-8 w-8 rounded-xl object-contain" />
               <span className="bg-gradient-to-r from-violet-400 via-blue-400 to-pink-400
-                               bg-clip-text text-transparent">💰 PricePulse</span>
+                               bg-clip-text text-transparent">PricePulse</span>
             </span>
           </div>
 
